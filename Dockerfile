@@ -21,14 +21,12 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Jalankan perintah yang dibutuhkan (migrate, optimize, dll)
 RUN composer install --no-dev --optimize-autoloader
 
+# Expose port
+EXPOSE 8080
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+
 # Set Apache document root ke public folder
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
 
 # Aktifkan Apache mod_rewrite
 RUN a2enmod rewrite
-
-# Expose port 8080 untuk Apache
-EXPOSE 8080
-
-# Jalankan Apache
-CMD ["apache2-foreground"]
