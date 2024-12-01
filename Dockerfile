@@ -1,32 +1,42 @@
-# Gunakan PHP dengan Apache
-FROM php:8.2-apache
+# Menggunakan base image resmi PHP 8.2 dengan FPM
+FROM php:8.2-fpm
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-    libzip-dev unzip git && \
-    docker-php-ext-install pdo_mysql zip
+    git \
+    curl \
+    zip \
+    unzip \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    nodejs \
+    npm \
+    supervisor \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
 # Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Salin source code
-COPY . /var/www/html
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Set working directory
-WORKDIR /var/www/html
+WORKDIR /var/www
 
-# Beri izin writable pada storage dan cache
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Salin file Laravel ke container
+COPY . .
 
-# Jalankan perintah yang dibutuhkan (migrate, optimize, dll)
+# Salin file .env
+COPY .env .env
+
+# Install dependensi Laravel
 RUN composer install --no-dev --optimize-autoloader
 
-# Expose port
-EXPOSE 8080
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=${PORT:-8080}"]
+# Set permission untuk storage dan bootstrap
+RUN chown -R www-data:www-data /var/www \
+    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
 
-# Set Apache document root ke public folder
-RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
+# Expose port untuk Nginx
+EXPOSE 9000
 
-# Aktifkan Apache mod_rewrite
-RUN a2enmod rewrite
+# Jalankan PHP-FPM
+CMD ["php-fpm"]
