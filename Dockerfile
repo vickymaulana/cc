@@ -23,7 +23,7 @@ RUN composer install --no-dev --optimize-autoloader
 
 # Expose port
 EXPOSE 8080
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=${PORT:-8080}"]
 
 # Set Apache document root ke public folder
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
