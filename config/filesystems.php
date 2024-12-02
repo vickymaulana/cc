@@ -39,9 +39,18 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
             'throw' => false,
+        ],
+
+        'gcs' => [
+            'driver' => 'gcs',
+            'project_id' => env('GCS_PROJECT_ID'),
+            'key_file' => env('GCS_KEY_FILE'), // Path to your service account json file
+            'bucket' => env('GCS_BUCKET'),
+            'path_prefix' => null,
+            'storage_api_uri' => null,
         ],
 
         's3' => [

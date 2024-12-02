@@ -27,9 +27,9 @@ class PatientController extends Controller
         'nama' => 'required|string|max:255',
         'nik' => 'required|string|size:16|unique:patients,nik',
         'tanggal_lahir' => 'required|date',
-        'agama' => 'required|string|max:50',
         'alamat' => 'required|string',
         'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+        'umur'=> 'required|number',
         'nomor_hp' => 'required|string|max:15|unique:patients,nomor_hp',
     ]);
 

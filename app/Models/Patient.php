@@ -13,7 +13,7 @@ class Patient extends Model
         'nama',
         'nik',
         'tanggal_lahir',
-        'agama',
+        'umur',
         'alamat',
         'jenis_kelamin',
         'nomor_hp',
