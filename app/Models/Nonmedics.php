@@ -15,6 +15,7 @@ class Nonmedics extends Model
         'nomor_kunjungan',
         'tanggal_kunjungan',
         'nama_pasien',
+        'data_objektif',
         'keluhan',
         'tindakan',
         'biaya_pembayaran',

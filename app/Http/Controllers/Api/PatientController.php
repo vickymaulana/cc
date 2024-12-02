@@ -57,14 +57,45 @@ class PatientController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $patient = Patient::findOrFail($id);
+
+        // Validasi data yang dikirimkan
+        $validatedData = $request->validate([
+            'nama' => 'nullable|string|max:255',
+            'nik' => 'nullable|string|size:16|unique:patients,nik,' . $id,
+            'tanggal_lahir' => 'nullable|date',
+            'alamat' => 'nullable|string',
+            'jenis_kelamin' => 'nullable|in:Laki-laki,Perempuan',
+            'umur' => 'nullable|integer|min:0',
+            'nomor_hp' => 'nullable|string|max:15|unique:patients,nomor_hp,' . $id,
+        ]);
+
+        // Perbarui data pasien
+        $patient->update($validatedData);
+
+        // Kembalikan respons JSON
+        return response()->json([
+            'message' => 'Data pasien berhasil diperbarui.',
+            'data' => $patient,
+        ], 200);
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        //
-    }
+    // Cari pasien berdasarkan ID
+    $patient = Patient::findOrFail($id);
+
+    // Hapus data pasien
+    $patient->delete();
+
+    // Kembalikan respons JSON
+    return response()->json([
+        'message' => 'Data pasien berhasil dihapus.',
+    ], 200);
 }
+    }
+

@@ -13,9 +13,12 @@ class Medic extends Model
         'nomor_kunjungan',
         'tanggal_kunjungan',
         'nama_pasien',
-        'anamnesa',
+        'data_objektif',
+        'input_genjala',
+        'predicted_diagnosa',
         'hasil_diagnosa',
         'tindakan',
+        'biaya_pembayaran'
     ];
 
     /**
