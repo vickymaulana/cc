@@ -1,36 +1,29 @@
-# Gunakan PHP 8.2 dengan Nginx
-FROM php:8.2-fpm-alpine
+# Menggunakan image PHP dengan FPM dan Composer
+FROM php:8.2-fpm
 
-# Install dependencies
-RUN apk add --no-cache \
-    nginx \
-    curl \
-    git \
-    unzip \
-    libpq-dev \
-    libzip-dev \
-    && docker-php-ext-install pdo pdo_mysql zip
-
-# Install Composer
-COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
-
-# Set working directory
+# Mengatur direktori kerja
 WORKDIR /var/www/html
 
-# Copy Laravel project
+# Instal ekstensi PHP yang dibutuhkan
+RUN apt-get update && apt-get install -y \
+    libzip-dev zip unzip git curl \
+    && docker-php-ext-install zip pdo pdo_mysql
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Salin semua file ke container
 COPY . .
 
-# Install Laravel dependencies
-RUN composer install --optimize-autoloader --no-dev
+# Set izin file untuk direktori Laravel
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Menjalankan perintah Composer
+RUN composer install --no-dev --optimize-autoloader
 
-# Configure Nginx
-COPY ./docker/nginx.conf /etc/nginx/nginx.conf
+# Expose port untuk Laravel
+EXPOSE 8000
 
-# Expose port
-EXPOSE 8080
-
-# Start Nginx and PHP-FPM
-CMD ["sh", "-c", "php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan storage:link && supervisord -c /etc/supervisor/supervisord.conf"]
+# Perintah untuk menjalankan aplikasi
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
